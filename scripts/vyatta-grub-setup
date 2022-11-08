@@ -207,22 +207,30 @@ fi
 	# UNION case
 	if [ -e "$ROOTFSDIR/boot/$livedir/vmlinuz" -a \
 	     -e "$ROOTFSDIR/boot/$livedir/initrd.img" ]; then
-            echo
-            echo -e "menuentry \"VyOS $version linux (KVM console)\" {"
-            echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $VGA_LOGO $vty_console"
-            echo -e  "\tinitrd /boot/$livedir/initrd.img"
-            echo -e "}"
-            echo
-            echo -e "menuentry \"VyOS $version linux (Serial console)\" {"
-            echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $serial_console"
-            echo -e  "\tinitrd /boot/$livedir/initrd.img"
-            echo -e "}"
-            echo
-            echo -e "menuentry \"VyOS $version linux (USB console)\" {"
-            echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $usb_console"
-            echo -e  "\tinitrd /boot/$livedir/initrd.img"
-            echo -e "}"
-
+            if [ $(uname -m) = "aarch64" ]; then
+                echo
+                echo -e "menuentry \"VyOS $version linux\" {"
+                echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS"
+                echo -e  "\tinitrd /boot/$livedir/initrd.img"
+                echo -e "}"
+                echo
+            else
+                echo
+                echo -e "menuentry \"VyOS $version linux (KVM console)\" {"
+                echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $VGA_LOGO $vty_console"
+                echo -e  "\tinitrd /boot/$livedir/initrd.img"
+                echo -e "}"
+                echo
+                echo -e "menuentry \"VyOS $version linux (Serial console)\" {"
+                echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $serial_console"
+                echo -e  "\tinitrd /boot/$livedir/initrd.img"
+                echo -e "}"
+                echo
+                echo -e "menuentry \"VyOS $version linux (USB console)\" {"
+                echo -e "\tlinux /boot/$livedir/vmlinuz $GRUB_OPTIONS $usb_console"
+                echo -e  "\tinitrd /boot/$livedir/initrd.img"
+                echo -e "}"
+            fi
 	elif [ -n "$union_kernel_versions" ]; then
 	    for kversion in $union_kernel_versions; do
 		echo
@@ -308,7 +316,6 @@ fi
     echo -e "\tlinux $reset_boot_path/vmlinuz $GRUB_OPTIONS $NOSELINUX $usb_console init=$pass_reset"
     echo -e "\tinitrd $reset_boot_path/initrd.img"
     echo -e "}"
-
 ) >"$ROOTFSDIR"/boot/grub/grub.cfg
 
 (   [ -s /boot/grub/menu.lst ] &&
